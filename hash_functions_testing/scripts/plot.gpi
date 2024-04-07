@@ -1,0 +1,48 @@
+#!/bin/gnuplot
+
+set terminal png size 1920,1080 lw 3 font "Times new roman, 30"
+
+set style data histograms
+set style histogram rows
+set style fill transparent solid 1
+
+set xlabel 'hash'
+set ylabel 'chain length'
+
+set xrange [0:10]
+
+set output '../data/results/img/ConstHash.png'
+plot '../data/results/data/ConstHash.txt' using 2 title "Constant"
+
+
+set xrange [0:150]
+set yrange [0:35000]
+
+set output '../data/results/img/CharHash.png'
+plot '../data/results/data/CharHash.txt' using 2 title "First Char"
+
+set output '../data/results/img/StrLenHash.png'
+plot '../data/results/data/StrLenHash.txt' using 2 title "String Length"
+
+set output '../data/results/img/RotRHash.png'
+plot '../data/results/data/RotRHash.txt' using 2 title "RotR"
+
+
+set xrange [0:65536]
+set yrange [0:600]
+
+set output '../data/results/img/CheckSumHash.png'
+plot '../data/results/data/CheckSumHash.txt' using 2 title "Check Sum"
+
+set output '../data/results/img/RotLHash.png'
+plot '../data/results/data/RotLHash.txt' using 2 title "RotL"
+
+set output '../data/results/img/CRC32Hash.png'
+plot '../data/results/data/CRC32Hash.txt' using 2 title "CRC32"
+
+
+set xrange [0:512]
+set yrange [0:800]
+
+set output '../data/results/img/CheckSumHash(small).png'
+plot '../data/results/data/CheckSumHash(small).txt' using 2 title "Check Sum"
