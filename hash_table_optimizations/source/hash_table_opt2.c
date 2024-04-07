@@ -11,6 +11,13 @@ extern size_t CRC32(char *key, size_t mod);
 static inline struct HashNode *HashNodeCtr(char *key, size_t val) __attribute__((always_inline));
 static inline void HashNodeDtr(struct HashNode *node) __attribute__((always_inline));
 
+static inline int StrCmp(const char *s1, const char *s2) __attribute__((always_inline));
+
+static inline int StrCmp(const char *s1, const char *s2)
+{
+    return !strcmp(s1, s2);
+}
+
 static inline struct HashNode *HashNodeCtr(char *key, size_t val)
 {
     struct HashNode *node = (struct HashNode *)malloc(sizeof(struct HashNode));
@@ -86,7 +93,7 @@ bool HashTableInsert(struct HashTable *table, char *key, size_t val)
     struct HashNode *prev = lst->head;
     for(struct HashNode *curr = prev->next; curr != NULL; prev = curr, curr = curr->next)
     {
-        if(strcmp(curr->key, key) == 0)
+        if(StrCmp(curr->key, key))
         {
             curr->val = val;
             return false;
@@ -109,7 +116,7 @@ bool HashTableDelete(struct HashTable *table, char *key)
 
     for(struct HashNode *prev = lst->head, *curr = prev->next; curr != NULL; prev = curr, curr = curr->next)
     {
-        if(strcmp(curr->key, key) == 0)
+        if(StrCmp(curr->key, key) == 0)
         {
             prev->next = curr->next;
             HashNodeDtr(curr);
@@ -132,7 +139,7 @@ struct HashNode *HashTableFind(struct HashTable *table, char *key)
 
     for(struct HashNode *curr = lst->head->next; curr != NULL; curr = curr->next)
     {
-        if(strcmp(curr->key, key) == 0) return curr;
+        if(StrCmp(curr->key, key) == 0) return curr;
     }
 
     return NULL;
