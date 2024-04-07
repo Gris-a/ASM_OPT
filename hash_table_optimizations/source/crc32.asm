@@ -25,8 +25,7 @@ CRC32:
     jz EndNext1
 Next1:
     shl rdx, 8
-    mov dl, [rdi]
-    inc rdi
+    mov dl, [rdi + rcx - 1]
     loop Next1
 EndNext1:
 ; -----------------------------------------------
