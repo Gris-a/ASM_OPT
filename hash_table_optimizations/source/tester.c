@@ -9,7 +9,12 @@ int main(void)
     char buf[MAX_KEY_LEN] = "";
     while(scanf("%s", buf) != EOF)
     {
-        HashTableInsert(table, buf, 0);
+        volatile bool aboba = HashTableInsert(table, buf, 0);
+    }
+
+    for(size_t i = 0; i < table->size_max; i++)
+    {
+        printf("%zu\t%zu\n", i, table->data[i].size);
     }
 
     table = HashTableDtr(table);

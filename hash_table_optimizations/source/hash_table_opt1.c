@@ -6,41 +6,10 @@
 
 #include "../include/hash_table.h"
 
-static size_t CRC32(char *key, uint64_t mod);
+extern size_t CRC32(char *key, size_t mod);
 
 static inline struct HashNode *HashNodeCtr(char *key, size_t val) __attribute__((always_inline));
 static inline void HashNodeDtr(struct HashNode *node) __attribute__((always_inline));
-
-
-static size_t CRC32(char *key, uint64_t mod)
-{
-    uint64_t crc = 0;
-
-    size_t key_len    = strlen(key);
-    size_t first_take = key_len & 3; // key_len % 4
-
-    for(size_t i = 0; i < first_take; i++)
-    {
-        crc <<= 8;
-        crc |= key[i];
-    }
-    crc <<= 32;
-
-    uint32_t *word_ptr = (uint32_t *)(key + first_take);
-    for(size_t i = first_take; i < key_len; i += 4, word_ptr++)
-    {
-        crc |= (uint64_t)*word_ptr;
-
-        for(size_t j = 0; j < 32; j++)
-        {
-            bool xor_cond = crc & ((uint64_t)1 << 63);
-            crc <<= 1;
-            crc   = (xor_cond) ? crc ^ ((uint64_t)0x04C11DB7 << 32) : crc;
-        }
-    }
-
-    return (size_t)((crc >> 32) & (mod - 1)); // % mod if mod == 2^k
-}
 
 
 static inline struct HashNode *HashNodeCtr(char *key, size_t val)
