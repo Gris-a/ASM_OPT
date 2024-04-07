@@ -16,8 +16,8 @@ CRC32:
     call strlen
 ; -----------------------------------------------
     mov rcx, rax
-    and rcx, 7
-    shr rax, 3
+    and rcx, 3
+    shr rax, 2
 ; -----------------------------------------------
     xor edx, edx
 ; -----------------------------------------------
@@ -25,7 +25,8 @@ CRC32:
     jz EndNext1
 Next1:
     shl rdx, 8
-    mov dl, [rdi + rcx - 1]
+    mov dl, [rdi]
+    inc rdi
     loop Next1
 EndNext1:
 ; -----------------------------------------------
@@ -35,12 +36,12 @@ EndNext1:
     test rcx, rcx
     jz EndNext2
 Next2:
-    crc32 rax, rdx
+    crc32 eax, edx
     mov rdx, [rdi]
-    add rdi, 8
+    add rdi, 4
     loop Next2
 EndNext2:
-    crc32 rax, rdx
+    crc32 eax, edx
 ; -----------------------------------------------
     and rax, rsi
     ret

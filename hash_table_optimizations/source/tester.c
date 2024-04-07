@@ -1,6 +1,9 @@
+#include <inttypes.h>
 #include <stdio.h>
 
 #include "../include/hash_table.h"
+
+inline int64_t TimeCounter(void) __attribute__((always_inline));
 
 int main(void)
 {
@@ -18,4 +21,23 @@ int main(void)
     }
 
     table = HashTableDtr(table);
+}
+
+inline int64_t TimeCounter(void)
+{
+    int64_t result = 0;
+
+    asm volatile
+    (
+        ".intel_syntax noprefix\n\t"
+        "rdtsc\n\t"
+        "shl rdx, 32\n\t"
+        "add rax, rdx\n\t"
+        ".att_syntax prefix\n\t"
+        : "=a"(result)
+        :
+        : "%rdx", "%rax"
+    );
+
+    return result;
 }
