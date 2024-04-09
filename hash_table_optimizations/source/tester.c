@@ -7,51 +7,50 @@
 #include "../include/hash_table.h"
 
 #define NWORDS 150000
-#define NCYCLES 6
+#define NCYCLES 100
+
+#define TABLE_SZ (1 << 18)
 
 char **GetWords(void);
 inline int64_t TimeCounter(void) __attribute__((always_inline));
 
 int main(void)
 {
-    struct HashTable *table = HashTableCtr(1 << 18);
     char **words = GetWords();
 
+    struct HashTable *table = HashTableCtr(TABLE_SZ);
     int64_t start = TimeCounter();
     for(size_t i = 0; i < NCYCLES; i++)
     {
         for(size_t j = 0; j < NWORDS; j++)
         {
-            volatile bool aboba = HashTableInsert(table, words[j], 0);
+            volatile bool is_inserted = HashTableInsert(table, words[j], 0);
         }
     }
     int64_t end = TimeCounter();
-
-    fprintf(stderr, "\n\n<\ttime neasured: %ld>\n\n", end - start);
-
-    for(size_t i = 0; i < NWORDS; i++)
-    {
-        free(words[i]);
-    }
-    free(words);
     table = HashTableDtr(table);
+
+
+    for(size_t i = 0; i < NWORDS; i++) free(words[i]);
+    free(words);
+
+    fprintf(stderr, "\n\n<time measured: %ld>\n\n", end - start);
 }
 
 inline int64_t TimeCounter(void)
 {
     int64_t result = 0;
 
-    asm volatile
+    asm
     (
         ".intel_syntax noprefix\n\t"
         "rdtsc\n\t"
         "shl rdx, 32\n\t"
         "add rax, rdx\n\t"
-        "mov %0, rax\n\t"
         ".att_syntax prefix\n\t"
-        : "=r"(result)
+        : "=a"(result)
         :
-        : "%rdx", "%rax"
+        : "%rdx"
     );
 
     return result;
@@ -60,14 +59,17 @@ inline int64_t TimeCounter(void)
 char **GetWords(void)
 {
     char **words = (char **)calloc(NWORDS, sizeof(char *));
+
     assert(words);
 
     char buf[MAX_KEY_LEN] = "";
     for(size_t i = 0; i < NWORDS; i++)
     {
         scanf("%s", buf);
-        words[i] = strdup(buf);
-        assert(words[i]);
+        char *temp = calloc(MAX_KEY_LEN, sizeof(char));
+        assert(temp);
+        strcpy(temp, buf);
+        words[i] = temp;
     }
 
     return words;

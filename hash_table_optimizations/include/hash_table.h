@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-#define MAX_KEY_LEN 100
+#define MAX_KEY_LEN 32
 
 struct HashNode;
 struct HashList;

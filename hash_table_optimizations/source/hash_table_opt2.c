@@ -6,16 +6,40 @@
 
 #include "../include/hash_table.h"
 
-extern size_t CRC32(char *key, size_t mod);
+static inline size_t CRC32(char *key, size_t mod) __attribute__((always_inline));
+
+static inline int str_compare(const char *s1, const char *s2) __attribute__((always_inline));
 
 static inline struct HashNode *HashNodeCtr(char *key, size_t val) __attribute__((always_inline));
 static inline void HashNodeDtr(struct HashNode *node) __attribute__((always_inline));
 
-static inline int StrCmp(const char *s1, const char *s2) __attribute__((always_inline));
-
-static inline int StrCmp(const char *s1, const char *s2)
+static inline int str_compare(const char *s1, const char *s2)
 {
-    return !strcmp(s1, s2);
+    __m256i mm_s1 = _mm256_loadu_si256((__m256i *)s1);
+    __m256i mm_s2 = _mm256_loadu_si256((__m256i *)s2);
+    return _mm256_testc_si256(mm_s1, mm_s2);
+}
+
+
+size_t CRC32(char *key, size_t mod)
+{
+    size_t crc = 0;
+    asm
+    (
+        ".intel_syntax noprefix\n\t"
+        "xor eax, eax\n\t"
+        "crc32 rax, qword ptr [%1 +  0]\n\t"
+        "crc32 rax, qword ptr [%1 +  8]\n\t"
+        "crc32 rax, qword ptr [%1 + 16]\n\t"
+        "crc32 rax, qword ptr [%1 + 24]\n\t"
+        "dec %2\n\t"
+        "and rax, %2\n\t"
+        ".att_syntax prefix\n\t"
+        : "=a"(crc)
+        : "D"(key), "S"(mod)
+    );
+
+    return crc;
 }
 
 static inline struct HashNode *HashNodeCtr(char *key, size_t val)
@@ -23,8 +47,9 @@ static inline struct HashNode *HashNodeCtr(char *key, size_t val)
     struct HashNode *node = (struct HashNode *)malloc(sizeof(struct HashNode));
     assert(node);
 
-    char *key_cpy = strdup(key);
+    char *key_cpy = (char *)calloc(32, sizeof(char));
     assert(key_cpy);
+    strcpy(key_cpy, key);
 
     node->key  = key_cpy;
     node->val  = val;
@@ -93,7 +118,7 @@ bool HashTableInsert(struct HashTable *table, char *key, size_t val)
     struct HashNode *prev = lst->head;
     for(struct HashNode *curr = prev->next; curr != NULL; prev = curr, curr = curr->next)
     {
-        if(StrCmp(curr->key, key))
+        if(str_compare(curr->key, key))
         {
             curr->val = val;
             return false;
@@ -116,7 +141,7 @@ bool HashTableDelete(struct HashTable *table, char *key)
 
     for(struct HashNode *prev = lst->head, *curr = prev->next; curr != NULL; prev = curr, curr = curr->next)
     {
-        if(StrCmp(curr->key, key) == 0)
+        if(str_compare(curr->key, key))
         {
             prev->next = curr->next;
             HashNodeDtr(curr);
@@ -139,7 +164,7 @@ struct HashNode *HashTableFind(struct HashTable *table, char *key)
 
     for(struct HashNode *curr = lst->head->next; curr != NULL; curr = curr->next)
     {
-        if(StrCmp(curr->key, key) == 0) return curr;
+        if(str_compare(curr->key, key)) return curr;
     }
 
     return NULL;
