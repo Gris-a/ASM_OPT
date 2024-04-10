@@ -43,21 +43,19 @@ size_t HashFuncRotL(char *key, size_t mod)
     {
         hash = ROL64(hash, 1);
         hash ^= *(key++);
-        hash %= mod;
     }
-    return (size_t)hash;
+    return (size_t)(hash % mod);
 }
 
 size_t HashFuncRotR(char *key, size_t mod)
 {
-    uint64_t hash = 0;
+    uint32_t hash = 0;
     while(*key != '\0')
     {
         hash = ROR64(hash, 1);
         hash ^= *(key++);
-        hash %= mod;
     }
-    return hash;
+    return (size_t)(hash % mod);
 }
 
 size_t HashFuncCRC32(char *key, size_t mod)

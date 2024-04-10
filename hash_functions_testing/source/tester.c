@@ -38,11 +38,12 @@ int main(int argc, char **argv)
     }
 
     size_t table_sz = 0;
-    if(strcmp(argv[2], "small") == 0)    table_sz = 1 << 9;
-    else if(strcmp(argv[2], "big") == 0) table_sz = 1 << 16;
+    if(strcmp(argv[2], "small") == 0)    table_sz = 1 << 9  - 3; //primes near 2^k
+    else if(strcmp(argv[2], "big") == 0) table_sz = 1 << 16 + 1; //primes near 2^k
     else abort();
 
     struct HashTable *table = HashTableCtr(Func, table_sz);
+
 
     char buf[MAX_KEY_LEN] = "";
     while(scanf("%s", buf) != EOF)
