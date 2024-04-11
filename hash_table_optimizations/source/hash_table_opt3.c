@@ -4,16 +4,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../include/hash_table.h"
+#include "../include/hash_table_opt3.h"
 
-static size_t CRC32(char *key, size_t mod);
+static inline size_t CRC32(char *key, size_t mod) __attribute__((always_inline));
 
-static int str_compare(const char *s1, const char *s2);
+static inline int str_compare(const char *s1, const char *s2) __attribute__((always_inline));
 
 static inline struct HashNode *HashNodeCtr(char *key, size_t val) __attribute__((always_inline));
 static inline void HashNodeDtr(struct HashNode *node) __attribute__((always_inline));
 
-static int str_compare(const char *s1, const char *s2)
+static inline int str_compare(const char *s1, const char *s2)
 {
     __m256i mm_s1 = _mm256_loadu_si256((__m256i *)s1);
     __m256i mm_s2 = _mm256_loadu_si256((__m256i *)s2);
@@ -21,7 +21,7 @@ static int str_compare(const char *s1, const char *s2)
 }
 
 
-static size_t CRC32(char *key, size_t mod)
+static inline size_t CRC32(char *key, size_t mod)
 {
     size_t crc = 0;
     asm
@@ -154,20 +154,6 @@ bool HashTableDelete(struct HashTable *table, char *key)
     }
 
     return false;
-}
-
-
-struct HashNode *HashTableFind(struct HashTable *table, char *key)
-{
-    size_t hash = CRC32(key, table->size_max);
-    struct HashList *lst = table->data + hash;
-
-    for(struct HashNode *curr = lst->head->next; curr != NULL; curr = curr->next)
-    {
-        if(str_compare(curr->key, key)) return curr;
-    }
-
-    return NULL;
 }
 
 size_t HashTableGet(struct HashTable *table, char *key)

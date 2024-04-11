@@ -4,7 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef OPT3
 #include "../include/hash_table.h"
+#else
+#include "../include/hash_table_opt3.h"
+#endif
 
 #define NWORDS 150000
 #define NCYCLES 100
@@ -16,25 +20,35 @@ inline int64_t TimeCounter(void) __attribute__((always_inline));
 
 int main(void)
 {
-    char **words = GetWords();
-
     struct HashTable *table = HashTableCtr(TABLE_SZ);
+
+    char **words = GetWords();
+    for(size_t j = 0; j < NWORDS; j++)
+    {
+        volatile bool is_inserted = HashTableInsert(table, words[j], 0);
+    }
+
     int64_t start = TimeCounter();
     for(size_t i = 0; i < NCYCLES; i++)
     {
         for(size_t j = 0; j < NWORDS; j++)
         {
-            volatile bool is_inserted = HashTableInsert(table, words[j], 0);
+            volatile struct HashNode *finded = HashTableFind(table, words[j]);
         }
     }
     int64_t end = TimeCounter();
-    table = HashTableDtr(table);
 
+    fprintf(stderr, "\n\n<time measured: %ld>\n\n", end - start);
 
     for(size_t i = 0; i < NWORDS; i++) free(words[i]);
     free(words);
 
-    fprintf(stderr, "\n\n<time measured: %ld>\n\n", end - start);
+
+    for(size_t i = 0; i < table->size_max; i++)
+    {
+        printf("%zu\n", table->data[i].size);
+    }
+    table = HashTableDtr(table);
 }
 
 inline int64_t TimeCounter(void)
