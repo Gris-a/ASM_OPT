@@ -49,7 +49,7 @@ size_t HashFuncRotL(char *key, size_t mod)
 
 size_t HashFuncRotR(char *key, size_t mod)
 {
-    uint32_t hash = 0;
+    uint64_t hash = 0;
     while(*key != '\0')
     {
         hash = ROR64(hash, 1);
