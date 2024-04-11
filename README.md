@@ -33,7 +33,7 @@
     .hash_functions_testing/scripts/runtests.bash
     .hash_table_optimizations/scripts/runtests.bash
 
-После завершения программы результаты тестирования хеш-функций появятся в папке [results](/hash_functions_testing/data/results), результаты профилирования разных этапов оптимизации хеш-таблицы появятся в папке [prof_results](/hash_table_optimizations/data/prof_results). Последние могут быть визуализированы при помощи `Kcachegrind`.
+После завершения программы результаты тестирования хеш-функций появятся в папке [results](/hash_functions_testing/data/results), результаты профилирования разных этапов оптимизации хеш-таблицы появятся в папке [prof_results](/hash_table_optimizations/data/prof_results). Последние могут быть просмотрены при помощи `Kcachegrind`.
 
 ## Hash Functions Testing
 
