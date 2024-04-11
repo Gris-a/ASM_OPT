@@ -15,7 +15,7 @@ CRC32:
     push rdi
     push rsi
 ; -----------------------------------------------
-    call strlen
+    call strlen                                 ; get key len
 ; -----------------------------------------------
     pop rsi
     pop rdi
@@ -27,7 +27,7 @@ CRC32:
     lea rdx, SwitchTable[rcx * 8]
     mov rcx, rax
     xor eax, eax
-    jmp [rdx]
+    jmp [rdx]                                   ; jump to remainder of key_len / 8
 ; -----------------------------------------------
 Remainder1:
     mov dl, [rdi]
@@ -97,7 +97,7 @@ Remainder0:
 ; -----------------------------------------------
     test rcx, rcx
     jz EndNext
-Next:
+Next:                                           ; count crc by words of 8-bytes size
     mov rdx, [rdi]
     crc32 rax, rdx
 
