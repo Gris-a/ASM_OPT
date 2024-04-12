@@ -3,7 +3,7 @@ SRC_DIR = source
 INC_DIR = include
 
 LINK    = @gcc -no-pie -lc -flto
-COMPILE = @gcc -DNDEBUG -c -O3 -mavx2
+COMPILE = @gcc -DNDEBUG -c -O1 -mavx2
 
 all: dirs scripts/no_opt.out scripts/opt1.out scripts/opt2.out scripts/opt3.out
 
